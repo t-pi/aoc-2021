@@ -231,6 +231,28 @@
 </li>
 </ul>
 </li>
+<li><a href="#_day_06_rust">Day 06: rust</a>
+<ul class="sectlevel3">
+<li><a href="#_day_06_lanternfish">Day 06: Lanternfish</a>
+<ul class="sectlevel4">
+<li><a href="#_parts_1_2">Parts 1 &amp; 2</a></li>
+<li><a href="#_tests_5">Tests</a></li>
+<li><a href="#_some_more_thoughts">Some more thoughts</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_day_07_rust">Day 07: rust</a>
+<ul class="sectlevel3">
+<li><a href="#_day_07_the_treachery_of_whales">Day 07: The Treachery of Whales</a>
+<ul class="sectlevel4">
+<li><a href="#_part_1_5">Part 1</a></li>
+<li><a href="#_part_2_5">Part 2</a></li>
+<li><a href="#_tests_6">Tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1241,7 +1263,7 @@ pub fn parse(content: &amp;str) -&gt; Vec&lt;(isize, isize, isize, isize)&gt; {
 </div>
 </div>
 <div class="paragraph">
-<p>To understand the playground, I have a function to determine the bounding box of all lines.</p>
+<p>I initially decided to count vents in a flat list representing the relevant part of the ocean&#8217;s ground. To identify that relevant part, I have a function to determine the bounding box of all lines.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1265,6 +1287,65 @@ pub fn get_bbox(lines: &amp;[(isize, isize, isize, isize)]) -&gt; (isize, isize,
 </div>
 </div>
 <div class="paragraph">
+<p>Later on, I realized that a lot of other solutions used hash maps to keep the counters. So I wanted to try that as well and see the runtime impact. I made my solution generic using a trait <code>VentsCount</code> and implementing it for <code>HashMap</code> directly and for vectors using a struct <code>VecVentsCount</code> with a bit of extra information on the bounding box.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// to allow using the same code with counts stored in a vector or in a hash map, the interface is modeled as a trait
+pub trait VentsCount {
+    /// increment count at given coordinate
+    fn increment(&amp;mut self, coord: (isize, isize));
+    /// count number of coordinates with count &gt; 1
+    fn count_dangerous(&amp;self) -&gt; usize;
+}
+
+impl VentsCount for HashMap&lt;(isize, isize), usize&gt; {
+    fn increment(&amp;mut self, coord: (isize, isize)) {
+        // get entry, create and initialize with value 0 if not yet present
+        let count = self.entry(coord).or_insert(0);
+        // increment
+        *count += 1;
+    }
+
+    fn count_dangerous(&amp;self) -&gt; usize {
+        self.values().filter(|count| **count &gt; 1).count()
+    }
+}
+
+/// structure to count vents based on a vector
+pub struct VecVentsCount {
+    counts: Vec&lt;usize&gt;,
+    width: isize,
+    x_min: isize,
+    y_min: isize,
+}
+
+impl VecVentsCount {
+    /// create new ``VecVentsCount`` for bounding box
+    pub fn new((x_min, y_min, x_max, y_max): (isize, isize, isize, isize)) -&gt; Self {
+        let width = x_max - x_min;
+        let counts = vec![0usize; (width * (y_max - y_min)) as usize];
+        VecVentsCount {
+            counts,
+            width,
+            x_min,
+            y_min,
+        }
+    }
+}
+
+impl VentsCount for VecVentsCount {
+    fn increment(&amp;mut self, (x, y): (isize, isize)) {
+        self.counts[(x - self.x_min + self.width * (y - self.y_min)) as usize] += 1;
+    }
+
+    fn count_dangerous(&amp;self) -&gt; usize {
+        self.counts.iter().filter(|count| **count &gt; 1).count()
+    }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
 <p>The solution is then build by iterating over all lines and for each line iterating over all points it contains and increment a counter for the coordinate of that point. Then count all coordinates which belong to more than one line (have counter value greater than 1).</p>
 </div>
 <div class="paragraph">
@@ -1272,11 +1353,14 @@ pub fn get_bbox(lines: &amp;[(isize, isize, isize, isize)]) -&gt; (isize, isize,
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn count_overlaps(lines: &amp;[(isize, isize, isize, isize)], incl_diagonal: bool) -&gt; usize {
-    let (x_min, y_min, x_max, y_max) = get_bbox(lines);
-
-    let width = x_max - x_min;
-    let mut counts = vec![0usize; (width * (y_max - y_min)) as usize];
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// this function uses the struct [VecVentsCount] by default. This behavior can be changed to using ``HashMap`` based
+/// counting using the feature ``hash_counters``
+pub fn count_overlaps(lines: &amp;[(isize, isize, isize, isize)], incl_diagonal: bool) -&gt; usize {
+    let mut counts: Box&lt;dyn VentsCount&gt; = if cfg!(feature = "hash_counters") {
+        Box::new(HashMap::new())
+    } else {
+        Box::new(VecVentsCount::new(get_bbox(lines)))
+    };
 
     for (x1, y1, x2, y2) in lines {
         if incl_diagonal || x1 == x2 || y1 == y2 {
@@ -1292,12 +1376,12 @@ pub fn get_bbox(lines: &amp;[(isize, isize, isize, isize)]) -&gt; (isize, isize,
             };
             let len = cmp::max((x2 - x1) * dx, (y2 - y1) * dy) + 1;
             for k in 0..len {
-                counts[(x1 + k * dx - x_min + width * (y1 + k * dy - y_min)) as usize] += 1;
+                counts.increment((x1 + k * dx, y1 + k * dy));
             }
         }
     }
 
-    counts.iter().filter(|count| **count &gt; 1).count()
+    counts.count_dangerous()
 }</code></pre>
 </div>
 </div>
@@ -1370,6 +1454,330 @@ mod tests {
 </div>
 <div class="paragraph">
 <p>Sometimes, it is a good idea to use signed types even if all the results are positive. This allows to deal with negative increments much more directly.</p>
+</div>
+<div class="paragraph">
+<p>Hash map based counting may come with a runtime penalty. In today&#8217;s puzzle, vector based counting performs three to four times faster.</p>
+</div>
+<a id="day06" />
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_day_06_rust"><a class="anchor" href="#_day_06_rust"></a><a class="link" href="#_day_06_rust">Day 06: rust</a></h3>
+<div class="sect3">
+<h4 id="_day_06_lanternfish"><a class="anchor" href="#_day_06_lanternfish"></a><a class="link" href="#_day_06_lanternfish">Day 06: Lanternfish</a></h4>
+<div class="paragraph">
+<p><a href="https://rust-lang.org">Rust</a> solution to <a href="https://adventofcode.com/2021/day/6">AoC|2021|06</a>.</p>
+</div>
+<div class="sect4">
+<h5 id="_parts_1_2"><a class="anchor" href="#_parts_1_2"></a><a class="link" href="#_parts_1_2">Parts 1 &amp; 2</a></h5>
+<div class="paragraph">
+<p>The key is to not keep a list of fishes but a list of timer values.</p>
+</div>
+<div class="paragraph">
+<p>Parsing the input is done as follows</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// parse fishes
+///
+/// returns an vector of the number of fishes per given timer value
+///
+/// ```
+/// # use mr_kaffee_2021_06::*;
+/// assert_eq!(vec![0, 1, 1, 2, 1, 0, 0, 0, 0], parse("3,4,3,1,2"));
+/// ```
+pub fn parse(content: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let mut fishes = vec![0; 9];
+
+    for age in content.trim().split(',') {
+        fishes[age.parse::&lt;usize&gt;().expect("Could not parse fish")] += 1;
+    }
+
+    fishes
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Simulations are done with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// simulate a given number of days
+///
+/// the timer values of all fishes are decreased by one. If the timer value is 0,
+/// it is reset to 6 and the same amount of fishes with time value 8 is added.
+pub fn simulate(mut fishes: Vec&lt;usize&gt;, days: usize) -&gt; Vec&lt;usize&gt; {
+    for _ in 0..days {
+        let new_fishes = fishes[0];
+        for k in 1..fishes.len() {
+            fishes[k - 1] = fishes[k];
+        }
+        fishes[6] += new_fishes;
+        fishes[8] = new_fishes;
+    }
+    fishes
+}
+
+/// simulate given number of rounds and return sum
+pub fn simulate_and_count(mut fishes: Vec&lt;usize&gt;, days: usize) -&gt; usize {
+    fishes = simulate(fishes, days);
+    fishes.iter().sum()
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_tests_5"><a class="anchor" href="#_tests_5"></a><a class="link" href="#_tests_5">Tests</a></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const DATA: &amp;'static [usize] = &amp;[0, 1, 1, 2, 1, 0, 0, 0, 0];
+
+    #[test]
+    fn test_simulate() {
+        let mut fishes = DATA.to_vec();
+        fishes = simulate(fishes, 1);
+        assert_eq!(fishes, parse("2,3,2,0,1"));
+        fishes = simulate(fishes, 1);
+        assert_eq!(fishes, parse("1,2,1,6,0,8"));
+        fishes = simulate(fishes, 1);
+        assert_eq!(fishes, parse("0,1,0,5,6,7,8"));
+    }
+
+    #[test]
+    fn test_simulate_and_count() {
+        assert_eq!(5934, simulate_and_count(DATA.to_vec(), 80));
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_some_more_thoughts"><a class="anchor" href="#_some_more_thoughts"></a><a class="link" href="#_some_more_thoughts">Some more thoughts</a></h5>
+<div class="paragraph">
+<p>I was thinking to create an explicit solution (in memory of my time at <a href="https://www.ist.uni-stuttgart.de/">University Stuttgart</a>). Fish growth is governed by the discrte time ODE</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>timers[k + 1] = A timers[k]
+count[k] = C timers[k]</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>with the matrices</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>    | 0 1 0 0 0 0 0 0 0 |
+    | 0 0 1 0 0 0 0 0 0 |
+    | 0 0 0 1 0 0 0 0 0 |
+    | 0 0 0 0 1 0 0 0 0 |
+A = | 0 0 0 0 0 1 0 0 0 |
+    | 0 0 0 0 0 0 1 0 0 |
+    | 1 0 0 0 0 0 0 1 0 |
+    | 0 0 0 0 0 0 0 0 1 |
+    | 1 0 0 0 0 0 0 0 0 |</pre>
+</div>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>C = ( 1 1 1 1 1 1 1 1 1 )</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The characteristic equation of A is</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>z^9 - z^2 - 1 = 0</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>which <a href="https://maxima.sourceforge.io/">Maxima</a> is not able to solve :( - so no explicit solution that I would be able to come up with</p>
+</div>
+<div class="paragraph">
+<p>For a big number of rounds, it might be interesting to calculate powers of the above matrix using <a href="https://en.wikipedia.org/wiki/Exponentiation_by_squaring">exponentiation by squaring</a>, but for 256 rounds, a direct approach is certainly more efficient.</p>
+</div>
+<div class="paragraph">
+<p>I might not have a direct soluton for an arbitrary number of rounds, but a direct solution for 80 and 256 rounds can still be given as</p>
+</div>
+<div class="literalblock">
+<div class="content">
+<pre>count[80] = ( 1421 1401 1191 1154 1034 950 905 779 768 ) * timers[0]
+count[256] = ( 6703087164 6206821033 5617089148 5217223242 4726100874 4368232009 3989468462 3649885552 3369186778 ) * timers[0]</pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">const CA_80: &amp;'static [usize] = &amp;[1421, 1401, 1191, 1154, 1034, 950, 905, 779, 768];
+const CA_256: &amp;'static [usize] = &amp;[
+    6703087164, 6206821033, 5617089148, 5217223242, 4726100874, 4368232009, 3989468462, 3649885552,
+    3369186778,
+];
+
+pub fn solve_direct(fishes: &amp;[usize], days: usize) -&gt; usize {
+    fishes
+        .iter()
+        .zip(
+            match days {
+                80 =&gt; CA_80,
+                256 =&gt; CA_256,
+                _ =&gt; panic!("No direct solution for {} days", days),
+            }
+            .iter(),
+        )
+        .map(|(counter, factor)| counter * factor)
+        .sum()
+}
+
+#[cfg(test)]
+mod direct_solution_test {
+    use super::*;
+
+    const INPUT: &amp;str = "4,1,1,4,1,2,1,4,1,3,4,4,1,5,5,1,3,1,1,1,4,4,3,1,5,3,1,2,5,1,1,5,\
+1,1,4,1,1,1,1,2,1,5,3,4,4,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,5,1,1,1,4,1,2,3,5,1,2,2,4,1,4,4,4,\
+1,2,5,1,2,1,1,1,1,1,1,4,1,1,4,3,4,2,1,3,1,1,1,3,5,5,4,3,4,1,5,1,1,1,2,2,1,3,1,2,4,1,1,3,3,\
+1,3,3,1,1,3,1,5,1,1,3,1,1,1,5,4,1,1,1,1,4,1,1,3,5,4,3,1,1,5,4,1,1,2,5,4,2,1,4,1,1,1,1,3,1,\
+1,1,1,4,1,1,1,1,2,4,1,1,1,1,3,1,1,5,1,1,1,1,1,1,4,2,1,3,1,1,1,2,4,2,3,1,4,1,2,1,4,2,1,4,4,\
+1,5,1,1,4,4,1,2,2,1,1,1,1,1,1,1,1,1,1,1,4,5,4,1,3,1,3,1,1,1,5,3,5,5,2,2,1,4,1,4,2,1,4,1,2,\
+1,1,2,1,1,5,4,2,1,1,1,2,4,1,1,1,1,2,1,1,5,1,1,2,2,5,1,1,1,1,1,2,4,2,3,1,2,1,5,4,5,1,4";
+
+    #[test]
+    #[should_panic]
+    fn test_direct_fails() {
+        solve_direct(&amp;parse(INPUT), 56);
+    }
+
+    #[test]
+    fn test_direct_80() {
+        let fishes = parse(INPUT);
+        let sol_direct = solve_direct(&amp;fishes, 80);
+        let sol_classic = simulate_and_count(fishes, 80);
+        assert_eq!(sol_classic, sol_direct);
+    }
+
+    #[test]
+    fn test_direct_256() {
+        let fishes = parse(INPUT);
+        let sol_direct = solve_direct(&amp;fishes, 256);
+        let sol_classic = simulate_and_count(fishes, 256);
+        assert_eq!(sol_classic, sol_direct);
+    }
+}</code></pre>
+</div>
+</div>
+<a id="day07" />
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_day_07_rust"><a class="anchor" href="#_day_07_rust"></a><a class="link" href="#_day_07_rust">Day 07: rust</a></h3>
+<div class="sect3">
+<h4 id="_day_07_the_treachery_of_whales"><a class="anchor" href="#_day_07_the_treachery_of_whales"></a><a class="link" href="#_day_07_the_treachery_of_whales">Day 07: The Treachery of Whales</a></h4>
+<div class="paragraph">
+<p><a href="https://rust-lang.org">Rust</a> solution to <a href="https://adventofcode.com/2021/day/7">AoC|2021|07</a>.</p>
+</div>
+<div class="sect4">
+<h5 id="_part_1_5"><a class="anchor" href="#_part_1_5"></a><a class="link" href="#_part_1_5">Part 1</a></h5>
+<div class="paragraph">
+<p>Parse input into number of vectors</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn parse(content: &amp;str) -&gt; Vec&lt;usize&gt; {
+    content
+        .trim()
+        .split(',')
+        .map(|v| v.parse().expect("Could not parse"))
+        .collect()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a function that calculates the fuel need for a given alignment position (after refactoring for part 2, this contains a cost function to map distance to cost as argument, for part 1, this is just the identity)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn get_fuel(crabs: &amp;[usize], position: usize, cost: fn(usize) -&gt; usize) -&gt; usize {
+    crabs
+        .iter()
+        .map(|crab| {
+            cost(if crab &gt; &amp;position {
+                crab - position
+            } else {
+                position - crab
+            })
+        })
+        .sum()
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For optimization, I did not even think about for something more clever than linear search.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn get_optimal_positions_fuel(crabs: &amp;[usize], cost: fn(usize) -&gt; usize) -&gt; usize {
+    let pos_min = *crabs.iter().min().expect("No min");
+    let pos_max = *crabs.iter().max().expect("No max");
+    (pos_min..=pos_max)
+        .map(|position| get_fuel(crabs, position, cost))
+        .min()
+        .expect("No min")
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_part_2_5"><a class="anchor" href="#_part_2_5"></a><a class="link" href="#_part_2_5">Part 2</a></h5>
+<div class="paragraph">
+<p>For part two I just use a different cost function: <code>COST_LINEAR</code> solves part 1, <code>COST_INCREASING</code> solves part 2:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub const COST_LINEAR: fn(usize) -&gt; usize = |distance| distance;
+pub const COST_INCREASING: fn(usize) -&gt; usize = |distance| distance * (distance + 1) / 2;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_tests_6"><a class="anchor" href="#_tests_6"></a><a class="link" href="#_tests_6">Tests</a></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const CONTENT: &amp;str = "16,1,2,0,4,2,7,1,2,14";
+    const DATA: &amp;'static [usize] = &amp;[16, 1, 2, 0, 4, 2, 7, 1, 2, 14];
+
+    #[test]
+    fn test_parse() {
+        assert_eq!(DATA, parse(CONTENT));
+    }
+
+    #[test]
+    fn test_get_fuel() {
+        assert_eq!(37, get_fuel(DATA, 2, COST_LINEAR));
+        assert_eq!(41, get_fuel(DATA, 1, COST_LINEAR));
+        assert_eq!(39, get_fuel(DATA, 3, COST_LINEAR));
+    }
+
+    #[test]
+    fn test_get_optimal_positions_fuel() {
+        assert_eq!(37, get_optimal_positions_fuel(DATA, COST_LINEAR));
+    }
+
+    #[test]
+    fn test_get_optimal_positions_fuel_2() {
+        assert_eq!(168, get_optimal_positions_fuel(DATA, COST_INCREASING));
+    }
+}</code></pre>
+</div>
 </div>
 </div>
 </div>
