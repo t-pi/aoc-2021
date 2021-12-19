@@ -151,6 +151,7 @@
 <ul class="sectlevel4">
 <li><a href="#_general_structure">General structure</a></li>
 <li><a href="#_run_solutions">Run Solutions</a></li>
+<li><a href="#_run_all_solutions">Run all Solutions</a></li>
 </ul>
 </li>
 </ul>
@@ -354,6 +355,29 @@
 </li>
 </ul>
 </li>
+<li><a href="#_day_17_rust">Day 17: rust</a>
+<ul class="sectlevel3">
+<li><a href="#_day_17_trick_shot">Day 17: Trick Shot</a>
+<ul class="sectlevel4">
+<li><a href="#_part_1_12">Part 1</a></li>
+<li><a href="#_part_2_12">Part 2</a></li>
+<li><a href="#_tests_16">Tests</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#_day_18_rust">Day 18: rust</a>
+<ul class="sectlevel3">
+<li><a href="#_day_18_snailfish">Day 18: Snailfish</a>
+<ul class="sectlevel4">
+<li><a href="#_part_1_13">Part 1</a></li>
+<li><a href="#_part_2_13">Part 2</a></li>
+<li><a href="#_tests_17">Tests</a></li>
+<li><a href="#_thoughts">Thoughts</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -393,67 +417,21 @@ Strava: <a href="https://www.strava.com/athletes/89256720">Peter Wieland</a></p>
 <div class="sect3">
 <h4 id="_day_00_hello_world"><a class="anchor" href="#_day_00_hello_world"></a><a class="link" href="#_day_00_hello_world">Day 00: Hello World</a></h4>
 <div class="paragraph">
-<p>I am still undecided what language to use this year.
-I&#8217;ll start with <a href="https://www.rust-lang.org/">Rust</a>.</p>
+<p>It&#8217;ll be another day of <a href="https://www.rust-lang.org/">Rust</a> solutions for the 2021 edition of
+<a href="https://adventofcode.com/2021">Advent of Code</a></p>
 </div>
 <div class="sect4">
 <h5 id="_general_structure"><a class="anchor" href="#_general_structure"></a><a class="link" href="#_general_structure">General structure</a></h5>
 <div class="paragraph">
-<p>Generally, my solutions will contain a <code>src/main.rs</code> file which reads inputs, calls the solution functions and measures time</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">fn read_input() -&gt; String {
-    fs::read_to_string("input.txt").expect("Could not read from file")
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">fn main() {
-    let instant = Instant::now();
-    write_output(&amp;read_input());
-    println!("Done in {:?}", instant.elapsed());
-}</code></pre>
-</div>
+<p>Generally, my solutions will contain a <code>src/main.rs</code> file which reads the input from <code>input.txt</code>,
+calls the solution functions and measures time.</p>
 </div>
 <div class="paragraph">
-<p>The actual solution will be implemented in a <code>lib.rs</code> file</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// Write string to console
-///
-/// # Examples
-///
-/// ```
-/// // running documentation examples as tests is a great idea in general; in this specific case
-/// // there might be little value in the code and test
-/// let s = "Hello World!";
-/// mr_kaffee_2021_00::write_output(&amp;s);
-/// ```
-pub fn write_output(s: &amp;str) {
-    println!("{}", s);
-}</code></pre>
-</div>
+<p>The actual solution will be implemented in <code>src/lib.rs</code> file.</p>
 </div>
 <div class="paragraph">
-<p>The <code>lib.rs</code> file also contains the tests in a separate submodule.
-I will use this for test-driven development, e.g., based on the examples given in the puzzles.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_write_output() {
-        // very stupid test
-        write_output("Hello World!");
-    }
-}</pre>
-</div>
+<p>The <code>lib.rs</code> file also contains the tests in a separate submodule. I will use this for test-driven
+development, e.g., based on the examples given in the puzzles.</p>
 </div>
 </div>
 <div class="sect4">
@@ -463,6 +441,46 @@ mod tests {
 </div>
 <div class="paragraph">
 <p>Run tests with <code>cargo test</code></p>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_run_all_solutions"><a class="anchor" href="#_run_all_solutions"></a><a class="link" href="#_run_all_solutions">Run all Solutions</a></h5>
+<div class="paragraph">
+<p>My <code>day00</code> solution this year will run all my solutions. At this time, it looks as follows</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn solve() {
+    let timer = Instant::now();
+    day00::solve();
+    day01::solve();
+    day02::solve();
+    day03::solve();
+    day04::solve();
+    day05::solve();
+    day06::solve();
+    day07::solve();
+    day08::solve();
+    day09::solve();
+    day10::solve();
+    day11::solve();
+    day12::solve();
+    day13::solve();
+    day14::solve();
+    day15::solve();
+    day16::solve();
+    day17::solve();
+    day18::solve();
+    // day19::solve();
+    // day20::solve();
+    // day21::solve();
+    // day22::solve();
+    // day23::solve();
+    // day24::solve();
+    // day25::solve();
+    println!("Total time: {:?}", timer.elapsed());
+}</code></pre>
+</div>
 </div>
 <a id="day00" />
 </div>
@@ -3963,22 +3981,22 @@ pub fn parse(content: &amp;str) -&gt; Packets {
 <pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn process_packet(packets: &amp;mut Packets) -&gt; usize {
     packets.skip(Packets::N_VERSION); // skip version
 
-    let mut value = 0;
     let type_id = packets.read_number(Packets::N_TYPE_ID);
     if type_id == 4 {
+        let mut value = 0;
         loop {
             let flag = packets.read_number(Packets::N_FLAG);
-            let value_part = packets.read_number(Packets::N_VALUE_PART);
-
-            value = value &lt;&lt; 4 | value_part;
+            value = value &lt;&lt; 4 | packets.read_number(Packets::N_VALUE_PART);
 
             if flag == 0 {
                 break; // last part's flag is 0
             }
         }
+        value
     } else {
         let length_type_id = packets.read_number(Packets::N_LENGTH_TYPE_ID);
         let length = packets.read_number(Packets::N_LENGTH[length_type_id]);
+
         let mut values = Vec::new();
         if length_type_id == 1 {
             for _ in 0..length {
@@ -3991,7 +4009,7 @@ pub fn parse(content: &amp;str) -&gt; Packets {
             }
         }
 
-        value = match type_id {
+        match type_id {
             Packets::SUM =&gt; values.iter().sum(),
             Packets::PRODUCT =&gt; values.iter().product(),
             Packets::MIN =&gt; *values.iter().min().expect("No min"),
@@ -4002,8 +4020,6 @@ pub fn parse(content: &amp;str) -&gt; Packets {
             _ =&gt; panic!("Illegal type ID: {}", type_id),
         }
     }
-
-    value
 }</code></pre>
 </div>
 </div>
@@ -4053,6 +4069,901 @@ mod tests {
         assert_eq!(1, solution_2(&amp;mut parse("9C0141080250320F1802104A08")));
     }
 }</code></pre>
+</div>
+</div>
+<a id="day17" />
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_day_17_rust"><a class="anchor" href="#_day_17_rust"></a><a class="link" href="#_day_17_rust">Day 17: rust</a></h3>
+<div class="sect3">
+<h4 id="_day_17_trick_shot"><a class="anchor" href="#_day_17_trick_shot"></a><a class="link" href="#_day_17_trick_shot">Day 17: Trick Shot</a></h4>
+<div class="paragraph">
+<p><a href="https://rust-lang.org">Rust</a> solution to <a href="https://adventofcode.com/2021/day/17">AoC|2021|17</a>.</p>
+</div>
+<div class="paragraph">
+<p>Today it is about Projectile (or Probe) motion and calculating initial conditions to reach a target. I guess, it would be possible to calculate an analytical solution for both parts by solving quadratic equations and than re-constructing the integer solutions, but this is not the approach I took.</p>
+</div>
+<div class="paragraph">
+<p>Note: My solution relies on the fact that the target lies to the right and below the starting point (the <em>below</em> part is actually important).</p>
+</div>
+<div class="sect4">
+<h5 id="_part_1_12"><a class="anchor" href="#_part_1_12"></a><a class="link" href="#_part_1_12">Part 1</a></h5>
+<div class="paragraph">
+<p>For part 1, I only consider the <code>y</code>-coordinate. If the probe is sent off with some initial velocity <code>vy0</code>, it will come back to the initial <code>y</code> cordinate with velocity <code>-vy0-1</code> after some time. The next <code>y</code> coordinate seen is thus <code>vy0+1</code> units below the initial <code>y</code>-coordinate. If the initial velocity is chosen such that this coordinate is just within the target region, this yields the trajectory with the highest possible maximum. See the comments in the code below for some more details.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn solution_1(target: (isize, isize, isize, isize)) -&gt; isize {
+    let (x_min, x_max, y_min, y_max) = target;
+
+    assert!(
+        x_min &gt; 0 &amp;&amp; x_max &gt; x_min &amp;&amp; y_max &lt; 0 &amp;&amp; y_min &lt; y_max,
+        "Solution assumes 0 &lt; x_min &lt; x_max and y_min &lt; y_max &lt; 0"
+    );
+
+    // max is reached if x coordinate ends up in target
+    // for given initial velocity vy0
+    //
+    // the max is reached at step k = vy0
+    // the max value is vy0 * (vy0 + 1) / 2
+    //
+    // at step k = 2 * vy0 + 1 the initial value y = 0 is reached again
+    // with velocity vy = -vy0 - 1
+    //
+    // the next step reaches
+    //   y = -vy0 - 1
+    //
+    // the highest max is reached, if y = -vy0 - 1 is just within the target
+    // zone, i.e., if y_min = -vy0 - 1 or vy0 = -y_min - 1
+
+    let vy0 = -y_min - 1;
+    vy0 * (vy0 + 1) / 2
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Of course, I also need to parse the input:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">///
+/// ```
+/// # use mr_kaffee_2021_17::*;
+/// assert_eq!((-1, 2, 0, 10), parse("target area: x=-1..2, y=0..10"));
+/// ```
+pub fn parse(content: &amp;str) -&gt; (isize, isize, isize, isize) {
+    let mut parts = content.trim().split(", ");
+    let lhs = parts.next().expect("No lhs");
+    let rhs = parts.next().expect("No rhs");
+
+    let x_range = lhs.split("=").skip(1).next().expect("No x range");
+    let y_range = rhs.split("=").skip(1).next().expect("No y range");
+
+    let mut x_parts = x_range.split("..");
+    let mut y_parts = y_range.split("..");
+
+    let x1 = x_parts
+        .next()
+        .expect("No x1")
+        .parse()
+        .expect("Cound not parse x1");
+    let x2 = x_parts
+        .next()
+        .expect("No x2")
+        .parse()
+        .expect("Cound not parse x2");
+    let y1 = y_parts
+        .next()
+        .expect("No y1")
+        .parse()
+        .expect("Cound not parse y1");
+    let y2 = y_parts
+        .next()
+        .expect("No y2")
+        .parse()
+        .expect("Cound not parse y2");
+
+    (x1, x2, y1, y2)
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_part_2_12"><a class="anchor" href="#_part_2_12"></a><a class="link" href="#_part_2_12">Part 2</a></h5>
+<div class="paragraph">
+<p>In part 2, it is about figuring out which limits for the initial conditions to check. See the comments in the code for what I came up with.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn solution_2(target: (isize, isize, isize, isize)) -&gt; usize {
+    let (x_min, x_max, y_min, y_max) = target;
+
+    assert!(
+        x_min &gt; 0 &amp;&amp; x_max &gt; x_min &amp;&amp; y_max &lt; 0 &amp;&amp; y_min &lt; y_max,
+        "Solution assumes 0 &lt; x_min &lt; x_max and y_min &lt; y_max &lt; 0"
+    );
+
+    // vx[0] = vx0
+    // run for vx0 steps
+    // end at vx0 + (vx0 - 1) + ... = vx0 * (vx0 + 1) / 2
+    // find smallest absolute vx0 so that target is reached
+    let mut vx_min = 0;
+    while vx_min * (vx_min + 1) / 2 &lt;= x_min {
+        vx_min += 1;
+    }
+
+    // if vx0 is above this value, the first step overshoots
+    let vx_max = x_max;
+
+    // if below, first step ends below target
+    let vy_min = y_min;
+
+    // max from part 1
+    let vy_max = -y_min - 1;
+
+    let mut count = 0;
+    for vx in vx_min..=vx_max {
+        for vy in vy_min..=vy_max {
+            if is_target_reached(target, vx as usize, vy) {
+                count += 1;
+            }
+        }
+    }
+
+    count
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For each candidate initial condition, I simulate the trajectory to check whether it reaches the target:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn is_target_reached(target: (isize, isize, isize, isize), vx: usize, vy: isize) -&gt; bool {
+    let mut x = 0;
+    let mut y = 0;
+    let mut vx = vx as isize;
+    let mut vy = vy;
+
+    while (vy &gt; 0 || y &gt;= target.2) &amp;&amp; x &lt;= target.1 { // while target can be reached
+        x = x + vx;
+        y = y + vy;
+        vx = if vx &gt; 0 { vx - 1 } else { vx };
+        vy = vy - 1;
+
+        if x &gt;= target.0 &amp;&amp; x &lt;= target.1 &amp;&amp; y &gt;= target.2 &amp;&amp; y &lt;= target.3 {
+            return true;
+        }
+    }
+
+    false
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_tests_16"><a class="anchor" href="#_tests_16"></a><a class="link" href="#_tests_16">Tests</a></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const CONTENT: &amp;str = "target area: x=20..30, y=-10..-5";
+    const TEST_TARGET: (isize, isize, isize, isize) = (20, 30, -10, -5);
+
+    #[test]
+    fn test_parse() {
+        assert_eq!(TEST_TARGET, parse(CONTENT));
+    }
+
+    #[test]
+    fn test_solution_1() {
+        assert_eq!(45, solution_1(TEST_TARGET));
+    }
+
+    #[test]
+    fn test_solution_2() {
+        assert_eq!(112, solution_2(TEST_TARGET));
+    }
+
+    #[test]
+    fn test_is_target_reached() {
+        let vs = &amp;[
+            (23, -10),
+            (25, -9),
+            (27, -5),
+            (29, -6),
+            (22, -6),
+            (21, -7),
+            (9, 0),
+            (27, -7),
+            (24, -5),
+            (25, -7),
+            (26, -6),
+            (25, -5),
+            (6, 8),
+            (11, -2),
+            (20, -5),
+            (29, -10),
+            (6, 3),
+            (28, -7),
+            (8, 0),
+            (30, -6),
+            (29, -8),
+            (20, -10),
+            (6, 7),
+            (6, 4),
+            (6, 1),
+            (14, -4),
+            (21, -6),
+            (26, -10),
+            (7, -1),
+            (7, 7),
+            (8, -1),
+            (21, -9),
+            (6, 2),
+            (20, -7),
+            (30, -10),
+            (14, -3),
+            (20, -8),
+            (13, -2),
+            (7, 3),
+            (28, -8),
+            (29, -9),
+            (15, -3),
+            (22, -5),
+            (26, -8),
+            (25, -8),
+            (25, -6),
+            (15, -4),
+            (9, -2),
+            (15, -2),
+            (12, -2),
+            (28, -9),
+            (12, -3),
+            (24, -6),
+            (23, -7),
+            (25, -10),
+            (7, 8),
+            (11, -3),
+            (26, -7),
+            (7, 1),
+            (23, -9),
+            (6, 0),
+            (22, -10),
+            (27, -6),
+            (8, 1),
+            (22, -8),
+            (13, -4),
+            (7, 6),
+            (28, -6),
+            (11, -4),
+            (12, -4),
+            (26, -9),
+            (7, 4),
+            (24, -10),
+            (23, -8),
+            (30, -8),
+            (7, 0),
+            (9, -1),
+            (10, -1),
+            (26, -5),
+            (22, -9),
+            (6, 5),
+            (7, 5),
+            (23, -6),
+            (28, -10),
+            (10, -2),
+            (11, -1),
+            (20, -9),
+            (14, -2),
+            (29, -7),
+            (13, -3),
+            (23, -5),
+            (24, -8),
+            (27, -9),
+            (30, -7),
+            (28, -5),
+            (21, -10),
+            (7, 9),
+            (6, 6),
+            (21, -5),
+            (27, -10),
+            (7, 2),
+            (30, -9),
+            (21, -8),
+            (22, -7),
+            (24, -9),
+            (20, -6),
+            (6, 9),
+            (29, -5),
+            (8, -2),
+            (27, -8),
+            (30, -5),
+            (24, -7),
+        ];
+        for (vx0, vy0) in vs {
+            assert!(
+                is_target_reached(TEST_TARGET, *vx0, *vy0),
+                "Failed at {}, {}",
+                vx0,
+                vy0
+            );
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<a id="day18" />
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_day_18_rust"><a class="anchor" href="#_day_18_rust"></a><a class="link" href="#_day_18_rust">Day 18: rust</a></h3>
+<div class="sect3">
+<h4 id="_day_18_snailfish"><a class="anchor" href="#_day_18_snailfish"></a><a class="link" href="#_day_18_snailfish">Day 18: Snailfish</a></h4>
+<div class="paragraph">
+<p><a href="https://rust-lang.org">Rust</a> solution to <a href="https://adventofcode.com/2021/day/18">AoC|2021|18</a>.</p>
+</div>
+<div class="sect4">
+<h5 id="_part_1_13"><a class="anchor" href="#_part_1_13"></a><a class="link" href="#_part_1_13">Part 1</a></h5>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Parse the snail numbers into vectors of tokens.</p>
+</li>
+<li>
+<p>Implement functions that aapply explode and split steps until no further reduction possible</p>
+</li>
+<li>
+<p>Calculate the sum over all snail numbers</p>
+</li>
+<li>
+<p>Calculate magnitude</p>
+</li>
+</ol>
+</div>
+<div class="sect5">
+<h6 id="_parse_2"><a class="anchor" href="#_parse_2"></a><a class="link" href="#_parse_2">Parse</a></h6>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// holds tokens of a snail number
+#[derive(PartialEq, Eq, Debug, Clone, Copy)]
+pub enum Token {
+    Op,
+    Cl,
+    Val(usize),
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// # Examples
+/// ```
+/// # use mr_kaffee_2021_18::*;
+/// assert_eq!(
+///   vec![
+///     vec![
+///       Token::Op,
+///       Token::Op,
+///       Token::Val(0),
+///       Token::Val(1),
+///       Token::Cl,
+///       Token::Val(1),
+///       Token::Cl
+///     ]
+///   ],
+///   parse("[[0,1],1]"));
+/// ```
+pub fn parse(content: &amp;str) -&gt; Vec&lt;Vec&lt;Token&gt;&gt; {
+    content
+        .lines()
+        .map(|line| {
+            line.chars()
+                .filter(|c| *c != ',')
+                .map(|c| match c {
+                    '[' =&gt; Token::Op,
+                    ']' =&gt; Token::Cl,
+                    '0'..='9' =&gt; Token::Val(c as usize - '0' as usize),
+                    _ =&gt; panic!("Unexpected character: {}", c),
+                })
+                .collect::&lt;Vec&lt;_&gt;&gt;()
+        })
+        .collect()
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_reduction"><a class="anchor" href="#_reduction"></a><a class="link" href="#_reduction">Reduction</a></h6>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// perform single explode
+///
+/// returns true if any explode performed, otherwise false
+pub fn explode(snail: &amp;mut Vec&lt;Token&gt;) -&gt; bool {
+    let mut level = 0;
+    let mut last_val = 0;
+    let mut number_seen = false;
+    for k in 0..snail.len() {
+        match snail[k] {
+            Token::Op =&gt; {
+                number_seen = false;
+                level += 1;
+            }
+            Token::Cl =&gt; {
+                number_seen = false;
+                level -= 1;
+            }
+            Token::Val(val) =&gt; {
+                if number_seen &amp;&amp; level == 5 {
+                    let prev = (0..k - 2)
+                        .rev()
+                        .filter_map(|j| {
+                            if let Token::Val(v) = snail[j] {
+                                Some((j, v))
+                            } else {
+                                None
+                            }
+                        })
+                        .next();
+                    if let Some((j, x)) = prev {
+                        snail[j] = Token::Val(x + last_val);
+                    }
+
+                    let next = (k + 2..snail.len())
+                        .filter_map(|j| {
+                            if let Token::Val(v) = snail[j] {
+                                Some((j, v))
+                            } else {
+                                None
+                            }
+                        })
+                        .next();
+                    if let Some((j, x)) = next {
+                        snail[j] = Token::Val(x + val);
+                    }
+
+                    // remove elements k-1, k, k+1
+                    snail.drain(k - 1..k + 2);
+                    snail[k - 2] = Token::Val(0);
+
+                    return true;
+                } else {
+                    last_val = val;
+                    number_seen = true;
+                }
+            }
+        }
+    }
+
+    false
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// perform single split
+///
+/// returns true if any split performed, otherwise false
+pub fn split(snail: &amp;mut Vec&lt;Token&gt;) -&gt; bool {
+    let find = snail
+        .iter()
+        .enumerate()
+        .filter_map(|(k, e)| {
+            if let Token::Val(v) = e {
+                if v &gt; &amp;9 {
+                    Some((k, v))
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        })
+        .next();
+
+    if let Some((k, v)) = find {
+        let a = v &gt;&gt; 1;
+        let b = v - a;
+        snail.splice(
+            k..k + 1,
+            [Token::Op, Token::Val(a), Token::Val(b), Token::Cl],
+        );
+
+        true
+    } else {
+        false
+    }
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// reduce snail number
+pub fn reduce(snail: &amp;mut Vec&lt;Token&gt;) {
+    while explode(snail) || split(snail) {}
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect5">
+<h6 id="_sum_magnitude"><a class="anchor" href="#_sum_magnitude"></a><a class="link" href="#_sum_magnitude">Sum &amp; Magnitude</a></h6>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// calculate sum over snailnumbers at given indices
+pub fn sum(snail: &amp;[Vec&lt;Token&gt;], mut indices: impl Iterator&lt;Item = usize&gt;) -&gt; Vec&lt;Token&gt; {
+    let mut sum = snail[indices.next().expect("Empty indices")].to_owned();
+    for k in indices {
+        sum.insert(0, Token::Op);
+        for e in &amp;snail[k] {
+            sum.push(*e);
+        }
+        sum.push(Token::Cl);
+        reduce(&amp;mut sum);
+    }
+    sum
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">/// recursively calculate magnitude for snailnumber at given position
+///
+/// returns magnitude and position
+pub fn magnitude(snail: &amp;[Token], k: usize) -&gt; (usize, usize) {
+    assert_eq!(Token::Op, snail[k], "Do not start with open");
+
+    let (a, j) = match snail[k + 1] {
+        Token::Op =&gt; magnitude(&amp;snail, k + 1),
+        Token::Val(v) =&gt; (v, k + 2),
+        Token::Cl =&gt; panic!("Unexpected close tag at {}", k + 1),
+    };
+    let (b, j) = match snail[j] {
+        Token::Op =&gt; magnitude(&amp;snail, j),
+        Token::Val(v) =&gt; (v, j + 1),
+        Token::Cl =&gt; panic!("Unexpected close tag at {}", j),
+    };
+
+    assert_eq!(Token::Cl, snail[j], "Do not end with close");
+
+    (3 * a + 2 * b, j + 1)
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_part_2_13"><a class="anchor" href="#_part_2_13"></a><a class="link" href="#_part_2_13">Part 2</a></h5>
+<div class="paragraph">
+<p>Simple extension</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">pub fn solution_2(snails: &amp;[Vec&lt;Token&gt;]) -&gt; usize {
+    let mut max = 0;
+    for k1 in 0..snails.len() {
+        for k2 in 0..snails.len() {
+            if k1 == k2 {
+                continue;
+            }
+
+            let sum = sum(snails, [k1, k2].into_iter());
+            let (m, _) = magnitude(&amp;sum, 0);
+            if m &gt; max {
+                max = m;
+            }
+        }
+    }
+
+    max
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_tests_17"><a class="anchor" href="#_tests_17"></a><a class="link" href="#_tests_17">Tests</a></h5>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_explode() {
+        let mut snails = parse("[[[[[9,8],1],2],3],4]\n[[[[0,9],2],3],4]");
+        assert!(explode(&amp;mut snails[0]), "Did not explode");
+        assert_eq!(snails[0], snails[1]);
+
+        let mut snails =
+            parse("[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]\n[[[[0,7],4],[7,[[8,4],9]]],[1,1]]");
+        assert!(explode(&amp;mut snails[0]));
+        assert_eq!(snails[0], snails[1]);
+    }
+
+    #[test]
+    fn test_split() {
+        let mut snails = vec![
+            vec![
+                Token::Op,
+                Token::Op,
+                Token::Val(1),
+                Token::Val(15),
+                Token::Cl,
+                Token::Val(11),
+                Token::Cl,
+            ],
+            vec![
+                Token::Op,
+                Token::Op,
+                Token::Val(1),
+                Token::Op,
+                Token::Val(7),
+                Token::Val(8),
+                Token::Cl,
+                Token::Cl,
+                Token::Val(11),
+                Token::Cl,
+            ],
+        ];
+        assert!(split(&amp;mut snails[0]), "Did not split");
+        assert_eq!(snails[0], snails[1]);
+    }
+
+    #[test]
+    fn test_reduce() {
+        let mut snails =
+            parse("[[[[[4,3],4],4],[7,[[8,4],9]]],[1,1]]\n[[[[0,7],4],[[7,8],[6,0]]],[8,1]]");
+
+        reduce(&amp;mut snails[0]);
+        assert_eq!(snails[0], snails[1]);
+    }
+
+    #[test]
+    fn test_sum() {
+        let snails = parse(
+            "[[[0,[5,8]],[[1,7],[9,6]]],[[4,[1,2]],[[1,4],2]]]
+[[[5,[2,8]],4],[5,[[9,9],0]]]
+[6,[[[6,2],[5,6]],[[7,6],[4,7]]]]
+[[[6,[0,7]],[0,9]],[4,[9,[9,0]]]]
+[[[7,[6,4]],[3,[1,3]]],[[[5,5],1],9]]
+[[6,[[7,3],[3,2]]],[[[3,8],[5,7]],4]]
+[[[[5,4],[7,7]],8],[[8,3],8]]
+[[9,3],[[9,9],[6,[4,9]]]]
+[[2,[[7,7],7]],[[5,8],[[9,3],[0,2]]]]
+[[[[5,2],5],[8,[3,7]]],[[5,[7,5]],[4,4]]]",
+        );
+
+        let sum = sum(&amp;snails, 0..snails.len());
+        assert_eq!(
+            parse("[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]")[0],
+            sum
+        );
+    }
+
+    #[test]
+    fn test_magnitude() {
+        let snails = parse("[[[[6,6],[7,6]],[[7,7],[7,0]]],[[[7,7],[7,7]],[[7,8],[9,9]]]]");
+        let (m, j) = magnitude(&amp;snails[0], 0);
+        assert_eq!(4140, m);
+        assert_eq!(snails[0].len(), j);
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_thoughts"><a class="anchor" href="#_thoughts"></a><a class="link" href="#_thoughts">Thoughts</a></h5>
+<div class="paragraph">
+<p>The structure calls for a recursive data structure. I might give it a try later on.</p>
+</div>
+<div class="paragraph">
+<p>For now, the puzzle is solved. Not a solution I am particularly proud of. Specifically, I don&#8217;t like that it increases the overall runtime for all my solutions for this year so far by 40%!</p>
+</div>
+<div class="paragraph">
+<p>I have a solution based on recursice data structures. It is three times slower&#8230;&#8203; Made some small optimizations in the vec based solution instead&#8230;&#8203; (you can run the recursive solution with <code>cargo run --release --features recursive</code>)</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight linenums"><code class="language-rust" data-lang="rust">    #[derive(Clone, PartialEq, Eq)]
+    pub enum Snail {
+        Val(usize),
+        Pair(Box&lt;Snail&gt;, Box&lt;Snail&gt;),
+    }
+
+    impl fmt::Display for Snail {
+        fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+            match self {
+                Self::Val(v) =&gt; write!(f, "{}", v),
+                Self::Pair(lhs, rhs) =&gt; write!(f, "[{},{}]", lhs, rhs),
+            }
+        }
+    }
+
+    impl fmt::Debug for Snail {
+        fn fmt(&amp;self, f: &amp;mut fmt::Formatter&lt;'_&gt;) -&gt; fmt::Result {
+            match self {
+                Self::Val(v) =&gt; write!(f, "{}", v),
+                Self::Pair(lhs, rhs) =&gt; write!(f, "[{},{}]", lhs, rhs),
+            }
+        }
+    }
+
+    impl Snail {
+        /// parse a string representation of a snail number
+        ///
+        /// # Examples
+        /// ```
+        /// # use mr_kaffee_2021_18::*;
+        /// let snail = Snail::parse("[[1,2]\n, 3]");
+        /// assert_eq!("[[1,2],3]", format!("{}", snail));
+        /// ```
+        pub fn parse(data: &amp;str) -&gt; Self {
+            Self::parse_recursive(&amp;mut data.chars().filter(|c| !c.is_whitespace()).peekable())
+        }
+
+        fn parse_recursive(data: &amp;mut Peekable&lt;impl Iterator&lt;Item = char&gt;&gt;) -&gt; Self {
+            let token = data.next();
+            match token {
+                Some('[') =&gt; {
+                    let lhs = Self::parse_recursive(data);
+                    assert_eq!(Some(','), data.next());
+                    let rhs = Self::parse_recursive(data);
+                    assert_eq!(Some(']'), data.next());
+                    Snail::Pair(Box::new(lhs), Box::new(rhs))
+                }
+                Some(c) if c &gt;= '0' &amp;&amp; c &lt;= '9' =&gt; {
+                    let mut v = c as usize - '0' as usize;
+                    while let Some(d) = data
+                        .peek()
+                        .filter(|c| c.is_ascii_digit())
+                        .map(|c| *c as usize - '0' as usize)
+                    {
+                        data.next();
+                        v = 10 * v + d;
+                    }
+                    Snail::Val(v)
+                }
+                _ =&gt; panic!("Unexpected token: {:?}", token),
+            }
+        }
+
+        /// get the value wrapped in an option if this is a [Snail::Val]. Otherwise return ``None``.
+        pub fn get_value(&amp;self) -&gt; Option&lt;usize&gt; {
+            match self {
+                Self::Val(a) =&gt; Some(*a),
+                _ =&gt; None,
+            }
+        }
+
+        fn increment_first(&amp;mut self, inc: usize) {
+            match self {
+                Self::Pair(lhs, _) =&gt; {
+                    if let Some(val) = lhs.get_value() {
+                        let _ = std::mem::replace(lhs, Box::new(Snail::Val(val + inc)));
+                    } else {
+                        lhs.increment_first(inc);
+                    }
+                }
+                _ =&gt; {}
+            }
+        }
+
+        fn increment_last(&amp;mut self, inc: usize) {
+            match self {
+                Self::Pair(_, rhs) =&gt; {
+                    if let Some(val) = rhs.get_value() {
+                        let _ = std::mem::replace(rhs, Box::new(Snail::Val(val + inc)));
+                    } else {
+                        rhs.increment_last(inc);
+                    }
+                }
+                _ =&gt; {}
+            }
+        }
+
+        fn explode(&amp;mut self, level: usize) -&gt; (Option&lt;Self&gt;, Option&lt;(usize, usize)&gt;) {
+            match self {
+                Self::Val(_) =&gt; (None, None),
+                Self::Pair(lhs, rhs) =&gt; {
+                    if level == 4 {
+                        if let (Some(a), Some(b)) = (lhs.get_value(), rhs.get_value()) {
+                            (Some(Self::Val(0)), Some((a, b)))
+                        } else {
+                            (None, None)
+                        }
+                    } else if level &lt; 4 {
+                        if let (replace, Some((a, b))) = lhs.explode(level + 1) {
+                            if let Some(val) = rhs.get_value() {
+                                // increment rhs with b
+                                let _ = std::mem::replace(rhs, Box::new(Self::Val(val + b)));
+                            } else {
+                                // increment first number in rhs with b
+                                rhs.increment_first(b);
+                            }
+
+                            if let Some(replace) = replace {
+                                // replace exploded value
+                                let _ = std::mem::replace(lhs, Box::new(replace));
+                            }
+                            (None, Some((a, 0)))
+                        } else if let (replace, Some((a, b))) = rhs.explode(level + 1) {
+                            if let Some(val) = lhs.get_value() {
+                                // increment lhs with a
+                                let _ = std::mem::replace(lhs, Box::new(Self::Val(val + a)));
+                            } else {
+                                // increment last number in lhs with a
+                                lhs.increment_last(a);
+                            }
+
+                            if let Some(replace) = replace {
+                                // replace exploded value
+                                let _ = std::mem::replace(rhs, Box::new(replace));
+                            }
+
+                            (None, Some((0, b)))
+                        } else {
+                            (None, None)
+                        }
+                    } else {
+                        (None, None)
+                    }
+                }
+            }
+        }
+
+        fn split(&amp;mut self) -&gt; bool {
+            if let Self::Pair(lhs, rhs) = self {
+                if let Some(val) = lhs.get_value() {
+                    if val &gt; 9 {
+                        let a = Box::new(Self::Val(val &gt;&gt; 1));
+                        let b = Box::new(Self::Val((val &gt;&gt; 1) + (val &amp; 1)));
+                        let _ = std::mem::replace(lhs, Box::new(Self::Pair(a, b)));
+                        return true;
+                    }
+                }
+                if lhs.split() {
+                    return true;
+                }
+                if let Some(val) = rhs.get_value() {
+                    if val &gt; 9 {
+                        let a = Box::new(Self::Val(val &gt;&gt; 1));
+                        let b = Box::new(Self::Val((val &gt;&gt; 1) + (val &amp; 1)));
+                        let _ = std::mem::replace(rhs, Box::new(Self::Pair(a, b)));
+                        return true;
+                    }
+                }
+                return rhs.split();
+            }
+
+            false
+        }
+
+        pub fn reduce(&amp;mut self) {
+            loop {
+                let (_, r) = self.explode(0);
+                if r.is_none() &amp;&amp; !self.split() {
+                    break;
+                }
+            }
+        }
+
+        pub fn add(&amp;self, other: &amp;Snail) -&gt; Self {
+            let mut sum = Self::Pair(Box::new(self.clone()), Box::new(other.clone()));
+            sum.reduce();
+            sum
+        }
+
+        pub fn magnitude(&amp;self) -&gt; usize {
+            match self {
+                Self::Val(v) =&gt; *v,
+                Self::Pair(a, b) =&gt; 3 * a.magnitude() + 2 * b.magnitude(),
+            }
+        }
+    }</code></pre>
 </div>
 </div>
 </div>
